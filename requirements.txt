@@ -1,14 +1,18 @@
-imaplib2
-requests
-playwright
-pypdf
-reportlab
-pdfplumber
-spacy
+flask==3.1.3
+gunicorn==23.0.0
+pypdf==5.4.0
+reportlab==4.4.0
+pdfplumber==0.11.6
+spacy==3.8.10
+Pillow==11.1.0
 google-auth
 google-auth-oauthlib
 google-auth-httplib2
 google-api-python-client
-pillow
+imaplib2
+requests
+playwright
+https://github.com/explosion/spacy-models/releases/download/en_core_web_sm-3.8.0/en_core_web_sm-3.8.0-py3-none-any.whl
+
 
 # sqlite3 is part of Python Standard Library (No install needed)
