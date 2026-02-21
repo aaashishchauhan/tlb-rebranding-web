@@ -11,3 +11,7 @@ thyrocare_state.json
 state.json
 venv/
 .env
+
+# Build artifacts (too large for GitHub)
+dist/
+build/
