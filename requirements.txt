@@ -1,0 +1,14 @@
+imaplib2
+requests
+playwright
+pypdf
+reportlab
+pdfplumber
+spacy
+google-auth
+google-auth-oauthlib
+google-auth-httplib2
+google-api-python-client
+pillow
+
+# sqlite3 is part of Python Standard Library (No install needed)

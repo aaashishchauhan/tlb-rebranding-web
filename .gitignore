@@ -1,0 +1,13 @@
+__pycache__/
+*.pyc
+*.log
+debug_output.txt
+download_pdf/
+temp/
+service_account.json
+token.json
+config.json
+thyrocare_state.json
+state.json
+venv/
+.env

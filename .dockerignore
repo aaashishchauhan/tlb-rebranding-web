@@ -1,0 +1,12 @@
+venv/
+__pycache__/
+wheels/
+*.pyc
+*.log
+download_pdf/
+temp/
+.git/
+.github/
+.gitignore
+README.md
+DEPLOY.md

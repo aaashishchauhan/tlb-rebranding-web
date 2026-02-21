@@ -1,0 +1,237 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TLB Rebranding Pro</title>
+    <link rel="stylesheet" href="/static/style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div class="app">
+        <!-- Header -->
+        <header class="header">
+            <div class="logo-row">
+                <div class="logo-icon">T</div>
+                <div>
+                    <h1>TLB Rebranding Pro</h1>
+                    <p class="subtitle">PDF Report Branding System</p>
+                </div>
+            </div>
+        </header>
+
+        <!-- Main Content -->
+        <main class="main">
+            <form id="uploadForm" enctype="multipart/form-data">
+
+                <!-- Upload Zone -->
+                <div class="card" id="dropZone">
+                    <div class="upload-zone" id="uploadArea">
+                        <div class="upload-icon">
+                            <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+                                <polyline points="17 8 12 3 7 8"/>
+                                <line x1="12" y1="3" x2="12" y2="15"/>
+                            </svg>
+                        </div>
+                        <p class="upload-title">Drop PDFs here or tap to upload</p>
+                        <p class="upload-hint">Select one or more PDF reports</p>
+                        <input type="file" id="fileInput" name="pdfs" accept=".pdf" multiple hidden>
+                    </div>
+                    <div id="fileList" class="file-list" style="display:none;"></div>
+                </div>
+
+                <!-- Options -->
+                <div class="card">
+                    <h2 class="card-title">Branding Options</h2>
+                    <div class="options-grid">
+                        <div class="option-item">
+                            <label class="option-label">Header Style</label>
+                            <select name="header_style" id="headerStyle" class="select-input">
+                                <option value="branded" selected>Branded Header</option>
+                                <option value="white">White Header</option>
+                                <option value="none">No Header</option>
+                            </select>
+                        </div>
+                        <div class="option-item">
+                            <label class="toggle">
+                                <input type="checkbox" name="add_cover" checked>
+                                <span class="toggle-slider"></span>
+                                <span class="toggle-text">Add Cover Page</span>
+                            </label>
+                        </div>
+                        <div class="option-item">
+                            <label class="toggle">
+                                <input type="checkbox" name="remove_first_page" checked>
+                                <span class="toggle-slider"></span>
+                                <span class="toggle-text">Remove First Page</span>
+                            </label>
+                        </div>
+                        <div class="option-item">
+                            <label class="toggle">
+                                <input type="checkbox" name="auto_rename" checked>
+                                <span class="toggle-slider"></span>
+                                <span class="toggle-text">Auto Rename Files</span>
+                            </label>
+                        </div>
+                        <div class="option-item">
+                            <label class="toggle">
+                                <input type="checkbox" name="merge_reports">
+                                <span class="toggle-slider"></span>
+                                <span class="toggle-text">Merge Patient Reports</span>
+                            </label>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Action Button -->
+                <button type="submit" class="btn-process" id="processBtn" disabled>
+                    <span class="btn-text">START REBRANDING</span>
+                    <span class="btn-loading" style="display:none;">
+                        <span class="spinner"></span> Processing...
+                    </span>
+                </button>
+            </form>
+
+            <!-- Result -->
+            <div class="card result-card" id="resultCard" style="display:none;">
+                <div class="result-icon" id="resultIcon">&#10003;</div>
+                <p class="result-text" id="resultText"></p>
+            </div>
+        </main>
+
+        <!-- Footer -->
+        <footer class="footer">
+            <p>TopLabsBazaar &copy; 2026</p>
+        </footer>
+    </div>
+
+    <script>
+        const dropZone = document.getElementById('dropZone');
+        const uploadArea = document.getElementById('uploadArea');
+        const fileInput = document.getElementById('fileInput');
+        const fileList = document.getElementById('fileList');
+        const processBtn = document.getElementById('processBtn');
+        const form = document.getElementById('uploadForm');
+        const resultCard = document.getElementById('resultCard');
+
+        let selectedFiles = [];
+
+        // Click to open file picker
+        uploadArea.addEventListener('click', () => fileInput.click());
+
+        // Drag & drop
+        ['dragover', 'dragenter'].forEach(e => {
+            dropZone.addEventListener(e, (ev) => {
+                ev.preventDefault();
+                dropZone.classList.add('drag-over');
+            });
+        });
+        ['dragleave', 'drop'].forEach(e => {
+            dropZone.addEventListener(e, (ev) => {
+                ev.preventDefault();
+                dropZone.classList.remove('drag-over');
+            });
+        });
+        dropZone.addEventListener('drop', (e) => {
+            const dt = e.dataTransfer;
+            handleFiles(dt.files);
+        });
+
+        fileInput.addEventListener('change', () => handleFiles(fileInput.files));
+
+        function handleFiles(files) {
+            selectedFiles = Array.from(files).filter(f => f.name.toLowerCase().endsWith('.pdf'));
+            updateFileList();
+        }
+
+        function updateFileList() {
+            if (selectedFiles.length === 0) {
+                fileList.style.display = 'none';
+                processBtn.disabled = true;
+                return;
+            }
+            fileList.style.display = 'block';
+            fileList.innerHTML = selectedFiles.map((f, i) =>
+                `<div class="file-item">
+                    <span class="file-name">${f.name}</span>
+                    <span class="file-size">${(f.size / 1024).toFixed(0)} KB</span>
+                    <button type="button" class="file-remove" onclick="removeFile(${i})">&times;</button>
+                </div>`
+            ).join('');
+            processBtn.disabled = false;
+            resultCard.style.display = 'none';
+        }
+
+        function removeFile(idx) {
+            selectedFiles.splice(idx, 1);
+            updateFileList();
+        }
+
+        form.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            if (selectedFiles.length === 0) return;
+
+            const formData = new FormData();
+
+            // Add files
+            selectedFiles.forEach(f => formData.append('pdfs', f));
+
+            // Add options
+            formData.append('header_style', document.getElementById('headerStyle').value);
+
+            document.querySelectorAll('.options-grid input[type=checkbox]').forEach(cb => {
+                formData.append(cb.name, cb.checked ? 'true' : 'false');
+            });
+
+            // UI: show loading
+            processBtn.disabled = true;
+            processBtn.querySelector('.btn-text').style.display = 'none';
+            processBtn.querySelector('.btn-loading').style.display = 'inline-flex';
+            resultCard.style.display = 'none';
+
+            try {
+                const resp = await fetch('/process', { method: 'POST', body: formData });
+
+                if (!resp.ok) {
+                    const err = await resp.json();
+                    throw new Error(err.error || 'Processing failed');
+                }
+
+                // Download the file
+                const blob = await resp.blob();
+                const contentDisp = resp.headers.get('Content-Disposition') || '';
+                let filename = 'TLB_Branded_Reports.zip';
+                const match = contentDisp.match(/filename=(.+?)(?:;|$)/);
+                if (match) filename = match[1].replace(/"/g, '');
+
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = filename;
+                document.body.appendChild(a);
+                a.click();
+                a.remove();
+                URL.revokeObjectURL(url);
+
+                // Show success
+                resultCard.style.display = 'block';
+                document.getElementById('resultIcon').textContent = '\u2713';
+                document.getElementById('resultIcon').className = 'result-icon success';
+                document.getElementById('resultText').textContent =
+                    `Done! ${selectedFiles.length} file(s) processed. Download started.`;
+
+            } catch (err) {
+                resultCard.style.display = 'block';
+                document.getElementById('resultIcon').textContent = '\u2717';
+                document.getElementById('resultIcon').className = 'result-icon error';
+                document.getElementById('resultText').textContent = err.message;
+            } finally {
+                processBtn.disabled = false;
+                processBtn.querySelector('.btn-text').style.display = 'inline';
+                processBtn.querySelector('.btn-loading').style.display = 'none';
+            }
+        });
+    </script>
+</body>
+</html>
